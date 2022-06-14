@@ -1,0 +1,66 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"os"
+	"time"
+
+	"cloud.google.com/go/firestore"
+
+	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
+	log "github.com/rs/zerolog/log"
+)
+
+var projectID = os.Getenv("PROJECT")
+var portNumber = os.Getenv("PORT")
+
+func init() {
+	log.Logger = zerolog.New(os.Stderr).With().Timestamp().Logger()
+	zerolog.LevelFieldName = "severity"
+	zerolog.TimestampFieldName = "timestamp"
+	zerolog.TimeFieldFormat = time.RFC3339Nano
+}
+
+func main() {
+	ctx := context.Background()
+	client, _ := firestore.NewClient(ctx, projectID)
+
+	g := gin.Default()
+
+	g.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"ping": "ok"})
+	})
+
+	g.GET("/api/author/:u", func(c *gin.Context) {
+		username := c.Param("u")
+		log.Info().Msg(username)
+		/* trick to get just one record */
+		query := client.Collection("authors").Where("username", "==", username).Limit(1)
+		itr := query.Documents(ctx)
+		defer itr.Stop()
+
+		snap, err := itr.Next()
+
+		var responseData = gin.H{}
+		var httpStatus = http.StatusNotFound
+
+		if err == nil {
+			responseData = snap.Data()
+			httpStatus = http.StatusOK
+		}
+
+		c.JSON(httpStatus, responseData)
+
+	})
+
+	if portNumber == "" {
+		portNumber = "8080"
+	}
+
+	portNumber = fmt.Sprintf(":%s", portNumber)
+
+	g.Run(portNumber)
+}
