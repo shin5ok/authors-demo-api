@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 from google.cloud import firestore
+import faker
 
+num = 500
 
 def add_from_dict(data:dict):
     db = firestore.Client()
     # Add a new doc in collection 'cities' with ID 'LA'
     db.collection('authors').document().set(data)
 
-def update_data_batch(data: list):
+def write_data_batch(data: list):
     db = firestore.Client()
     batch = db.batch()
 
@@ -17,17 +19,18 @@ def update_data_batch(data: list):
 
     batch.commit()
 
-import faker
 
-fake=faker.Faker(['ja_JP'])
+if __name__ == '__main__':
+    fake = faker.Faker(['ja_JP'])
 
-data = []
-for v in range(1,500):
-    d=fake.profile()
-    del d['birthdate']
-    del d['current_location']
-    # add_from_dict(d)
-    data.append(d)
-    print(d)
+    data = []
+    for v in range(1,num):
+        d = fake.profile()
+        del d['birthdate']
+        del d['current_location']
+        data.append(d)
+        print(d)
 
-update_data_batch(data)
+    write_data_batch(data)
+    print()
+    print(f"{num} records were writed to Firestore.")
