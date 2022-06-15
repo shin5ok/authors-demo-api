@@ -31,7 +31,7 @@ func main() {
 	g := gin.Default()
 
 	g.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"ping": "ok"})
+		c.JSON(http.StatusOK, gin.H{"ping": "pong"})
 	})
 
 	g.GET("/api/author/:u", func(c *gin.Context) {
