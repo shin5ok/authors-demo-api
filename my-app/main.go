@@ -30,7 +30,7 @@ func main() {
 
 	g := gin.Default()
 
-	g.GET("/ping", func(c *gin.Context) {
+	g.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"ping": "ok"})
 	})
 
