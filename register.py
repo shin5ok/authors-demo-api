@@ -3,14 +3,14 @@ from google.cloud import firestore
 import faker
 import click
 
-DEFAULT_NUMBER = 500
+DEFAULT_NUMBER: int = 500
 
-def add_from_dict(data: dict):
+def add_from_dict(data: dict) -> None:
     db = firestore.Client()
     # Add a new doc in collection 'cities' with ID 'LA'
     db.collection('authors').document().set(data)
 
-def write_data_batch(data: list):
+def write_data_batch(data: list) -> None:
     db = firestore.Client()
     batch = db.batch()
 
@@ -22,7 +22,7 @@ def write_data_batch(data: list):
 
 @click.command()
 @click.option("--number", "-n", default=DEFAULT_NUMBER)
-def run(number: int):
+def run(number: int) -> None:
     fake = faker.Faker(['ja_JP'])
 
     data = []
