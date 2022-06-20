@@ -29,6 +29,7 @@ class AuthorResponse(BaseModel):
 
 @app.get("/")
 def _root():
+    logger.info(f"get '/'")
     return Response(message="Hello, World")
 
 @app.get("/api/author/{username}")
@@ -44,6 +45,6 @@ if __name__ == '__main__':
     options = {
             'port': int(port),
             'host': '0.0.0.0',
-            'workers': 8,
+            'workers': 2,
         }
     uvicorn.run("main:app", **options)
