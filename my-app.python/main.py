@@ -11,8 +11,17 @@ db = firestore.Client()
 class Response(BaseModel):
     message: str
 
+class Author(BaseModel):
+    mail: str
+    username: str
+    name: str
+    address: str
+    company: str
+    job: str
+    website: list
+
 class AuthorResponse(BaseModel):
-    data: dict
+    data: Author
 
 @app.get("/")
 def _root():
