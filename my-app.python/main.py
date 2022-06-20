@@ -1,13 +1,13 @@
 from fastapi import FastAPI, Depends
 from pydantic import BaseModel
 from google.cloud import firestore
-
+import os
+import uvicorn
 import logging
 
 COLLECTION: str = "authors"
 
 app = FastAPI()
-
 db = firestore.Client()
 
 logger = logging.getLogger('uvicorn')
@@ -38,3 +38,12 @@ def _author_get(username: str):
     data = list(result)[-1]
     logger.info(f"get '{username}'")
     return AuthorResponse(data=data.to_dict())
+
+if __name__ == '__main__':
+    port = os.environ.get("PORT", "8080")
+    options = {
+            'port': int(port),
+            'host': '0.0.0.0',
+            'workers': 8,
+        }
+    uvicorn.run("main:app", **options)
