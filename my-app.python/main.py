@@ -6,14 +6,17 @@ import uvicorn
 import logging
 import json
 import time
+import sys
 
 COLLECTION: str = "authors"
 
 app = FastAPI()
 db = firestore.Client()
 
-logger = logging.getLogger('uvicorn')
-
+logger = logging.getLogger(__name__)
+handler = logging.StreamHandler(sys.stdout)
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
 class Response(BaseModel):
     message: str
 
