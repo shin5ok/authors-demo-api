@@ -26,12 +26,12 @@ def run(number: int) -> None:
     fake = faker.Faker(['ja_JP'])
 
     data = []
-    for v in range(1, number):
+    for t, v in enumerate(range(1, number)):
         d = fake.profile()
         del d['birthdate']
         del d['current_location']
         data.append(d)
-        print(d)
+        print(t+1, ":", d['name'], d['username'], d['job'], d['ssn'], d['address'])
 
     write_data_batch(data)
     print()
