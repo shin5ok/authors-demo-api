@@ -57,7 +57,7 @@ func main() {
 				Str("host", c.Request.Host).
 				Str("remote_addr", c.Request.RemoteAddr).
 				Str("user_agent", c.Request.UserAgent()).
-				Str("process_time", difftime.String()).
+				Int64("process_time", difftime.Milliseconds()).
 				Send()
 		}
 
