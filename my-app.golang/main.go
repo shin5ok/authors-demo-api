@@ -35,8 +35,8 @@ func main() {
 	})
 
 	g.GET("/api/author/:u", func(c *gin.Context) {
+		start := time.Now()
 		username := c.Param("u")
-		log.Info().Msg(username)
 		/* trick to get just one record */
 		query := client.Collection("authors").Where("username", "==", username).Limit(1)
 		itr := query.Documents(ctx)
@@ -50,6 +50,15 @@ func main() {
 		if err == nil {
 			responseData = snap.Data()
 			httpStatus = http.StatusOK
+			finish := time.Now()
+			difftime := finish.Sub(start)
+			log.Info().
+				Str("path", c.Request.URL.Path).
+				Str("host", c.Request.Host).
+				Str("remote_addr", c.Request.RemoteAddr).
+				Str("user_agent", c.Request.UserAgent()).
+				Str("process_time", difftime.String()).
+				Send()
 		}
 
 		c.JSON(httpStatus, responseData)
