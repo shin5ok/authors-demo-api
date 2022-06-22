@@ -10,6 +10,8 @@ uvicorn = "^0.17.6"
 fastapi = "^0.78.0"
 pydantic = "^1.9.1"
 google-cloud-firestore = "^2.5.3"
+grpcio-tools = "^1.46.3"
+grpcio = "^1.46.3"
 
 [tool.poetry.dev-dependencies]
 
