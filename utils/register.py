@@ -29,7 +29,9 @@ def run(number: int) -> None:
     for t, v in enumerate(range(0, number)):
         d = fake.profile()
         del d['birthdate']
+        del d['sex']
         del d['current_location']
+        del d['residence']
         data.append(d)
         print(t+1, ":", d['name'], d['username'], d['job'], d['ssn'], d['address'])
 
