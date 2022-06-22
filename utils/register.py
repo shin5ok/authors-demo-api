@@ -26,7 +26,7 @@ def run(number: int) -> None:
     fake = faker.Faker(['ja_JP'])
 
     data = []
-    for t, v in enumerate(range(1, number)):
+    for t, v in enumerate(range(0, number)):
         d = fake.profile()
         del d['birthdate']
         del d['current_location']
