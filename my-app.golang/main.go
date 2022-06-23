@@ -55,6 +55,7 @@ func main() {
 			log.Info().
 				Str("path", c.Request.URL.Path).
 				Str("host", c.Request.Host).
+				Str("method", c.Request.Method).
 				Str("remote_addr", c.Request.RemoteAddr).
 				Str("user_agent", c.Request.UserAgent()).
 				Int64("process_time", difftime.Milliseconds()).
