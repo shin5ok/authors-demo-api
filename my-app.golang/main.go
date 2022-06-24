@@ -18,7 +18,7 @@ var projectID = os.Getenv("PROJECT")
 var portNumber = os.Getenv("PORT")
 
 func init() {
-	log.Logger = zerolog.New(os.Stderr).With().Timestamp().Logger()
+	log.Logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
 	zerolog.LevelFieldName = "severity"
 	zerolog.TimestampFieldName = "timestamp"
 	zerolog.TimeFieldFormat = time.RFC3339Nano
