@@ -35,7 +35,7 @@ class Author(BaseModel):
 class AuthorResponse(BaseModel):
     data: Author
 
-@routers.get("/api/author/{username}")
+@routers.get("/author/{username}")
 def _author_get(username: str, request: Request, user_agent = Header(default=None), host = Header(default=None), ):
 
     start_time = time.time()
