@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, Header, Request, APIRouter
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from google.cloud import firestore
 import os
 import uvicorn
@@ -24,7 +24,7 @@ class Response(BaseModel):
     message: str
 
 class Author(BaseModel):
-    mail: str
+    mail: None | EmailStr
     username: str = Field(min=2, max=32, regex="[0-9a-z\-]+")
     name: str
     address: str
@@ -56,7 +56,8 @@ def _author_post(author: Author, username: str, request: Request, user_agent = H
     start_time = time.time()
 
     docs = db.collection(COLLECTION).document()
-    docs.set(author.__dict__)
+    docs.set(author.dict())
+    print(author.dict())
 
     process_time = time.time() - start_time
 
