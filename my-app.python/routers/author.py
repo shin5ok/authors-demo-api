@@ -47,15 +47,19 @@ def _author_get(username: str, request: Request, user_agent = Header(default=Non
 
     process_time = time.time() - start_time
 
-    logger.info(json.dumps(dict(path=f"/api/author/{username}", user_agent=user_agent, host=host, process_time=process_time, remote_addr=request.client.host)))
+    logger.info(json.dumps(dict(path=f"/api/author/{username}", method=request.method, user_agent=user_agent, host=host, process_time=process_time, remote_addr=request.client.host)))
     return AuthorResponse(data=response_data)
 
 @routers.post("/author/{username}")
-def _author_post(author: Author, username: str):
+def _author_post(author: Author, username: str, request: Request, user_agent = Header(default=None), host = Header(default=None), ):
 
     start_time = time.time()
-    print(author)
 
     docs = db.collection(COLLECTION).document()
     docs.set(author.__dict__)
+
+    process_time = time.time() - start_time
+
+    logger.info(json.dumps(dict(path=f"/api/author/{username}", method=request.method, user_agent=user_agent, host=host, process_time=process_time, remote_addr=request.client.host)))
     return AuthorResponse(data=author)
+
