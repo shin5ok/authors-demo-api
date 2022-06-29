@@ -12,6 +12,7 @@ pydantic = "^1.9.1"
 google-cloud-firestore = "^2.5.3"
 grpcio-tools = "1.47.0"
 grpcio = "^1.46.3"
+email-validator = "^1.2.1"
 
 [tool.poetry.dev-dependencies]
 
