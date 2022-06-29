@@ -49,3 +49,13 @@ def _author_get(username: str, request: Request, user_agent = Header(default=Non
 
     logger.info(json.dumps(dict(path=f"/api/author/{username}", user_agent=user_agent, host=host, process_time=process_time, remote_addr=request.client.host)))
     return AuthorResponse(data=response_data)
+
+@routers.post("/author/{username}")
+def _author_post(author: Author, username: str):
+
+    start_time = time.time()
+    print(author)
+
+    docs = db.collection(COLLECTION).document()
+    docs.set(author.__dict__)
+    return AuthorResponse(data=author)
