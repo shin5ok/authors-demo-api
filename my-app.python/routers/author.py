@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, Header, Request, APIRouter
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from google.cloud import firestore
 import os
 import uvicorn
@@ -25,7 +25,7 @@ class Response(BaseModel):
 
 class Author(BaseModel):
     mail: str
-    username: str
+    username: str = Field(min=2, max=32, regex="[0-9a-z\-]+")
     name: str
     address: str
     company: str
