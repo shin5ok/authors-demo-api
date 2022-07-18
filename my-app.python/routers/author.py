@@ -8,6 +8,8 @@ import json
 import time
 import sys
 
+from common import get_coll
+
 COLLECTION: str = "authors"
 
 app = FastAPI()
@@ -36,11 +38,11 @@ class AuthorResponse(BaseModel):
     data: Author
 
 @routers.get("/author/{username}")
-def _author_get(username: str, request: Request, user_agent = Header(default=None), host = Header(default=None), ):
+def _author_get(username: str, request: Request, user_agent = Header(default=None), host = Header(default=None), s = Depends(get_coll)):
 
     start_time = time.time()
 
-    docs = db.collection(COLLECTION).where("username", "==", username).limit(1)
+    docs = s.where("username", "==", username).limit(1)
     result = docs.stream()
     data = list(result)[-1]
     response_data = data.to_dict()
@@ -51,7 +53,7 @@ def _author_get(username: str, request: Request, user_agent = Header(default=Non
     return AuthorResponse(data=response_data)
 
 @routers.post("/author/{username}")
-def _author_post(author: Author, username: str, request: Request, user_agent = Header(default=None), host = Header(default=None), ):
+def _author_post(author: Author, username: str, request: Request, user_agent = Header(default=None), host = Header(default=None), s = Depends(get_coll)):
 
     start_time = time.time()
 
