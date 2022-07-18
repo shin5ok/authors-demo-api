@@ -57,7 +57,7 @@ def _author_post(author: Author, username: str, request: Request, user_agent = H
 
     start_time = time.time()
 
-    docs = db.collection(COLLECTION).document()
+    docs = s.document()
     docs.set(author.dict())
     print(author.dict())
 
