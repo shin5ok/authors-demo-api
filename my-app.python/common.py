@@ -8,7 +8,7 @@ import json
 import time
 import sys
 
-COLLECTION: str = os.environ.get("COLLECTION")
+COLLECTION: str = os.environ.get("COLLECTION", "authors")
 db = firestore.Client()
 
 def get_coll():
