@@ -10,6 +10,7 @@ import (
 	"cloud.google.com/go/firestore"
 
 	"github.com/gin-gonic/gin"
+	"github.com/penglongli/gin-metrics/ginmetrics"
 	"github.com/rs/zerolog"
 	log "github.com/rs/zerolog/log"
 )
@@ -27,6 +28,30 @@ func init() {
 func main() {
 	ctx := context.Background()
 	client, _ := firestore.NewClient(ctx, projectID)
+
+	g := genRouter(ctx, client)
+
+	forProm := gin.Default()
+	prom := ginmetrics.GetMonitor()
+	prom.SetMetricPath("/metrics")
+	prom.SetSlowTime(10)
+	prom.UseWithoutExposingEndpoint(g)
+	prom.Expose(forProm)
+
+	go func() {
+		forProm.Run(":8000")
+	}()
+
+	if portNumber == "" {
+		portNumber = "8080"
+	}
+
+	portNumber = fmt.Sprintf(":%s", portNumber)
+
+	g.Run(portNumber)
+}
+
+func genRouter(ctx context.Context, client *firestore.Client) *gin.Engine {
 
 	g := gin.Default()
 
@@ -66,11 +91,6 @@ func main() {
 
 	})
 
-	if portNumber == "" {
-		portNumber = "8080"
-	}
+	return g
 
-	portNumber = fmt.Sprintf(":%s", portNumber)
-
-	g.Run(portNumber)
 }
