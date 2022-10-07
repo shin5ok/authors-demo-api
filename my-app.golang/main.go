@@ -36,6 +36,7 @@ func main() {
 	prom.SetMetricPath("/metrics")
 	prom.SetSlowTime(10)
 	prom.UseWithoutExposingEndpoint(g)
+	prom.SetDuration([]float64{0.1, 0.3, 1, 2, 5, 10})
 	prom.Expose(forProm)
 
 	go func() {
@@ -48,7 +49,7 @@ func main() {
 
 	portNumber = fmt.Sprintf(":%s", portNumber)
 
-	g.Run(portNumber)
+	_ = g.Run(portNumber)
 }
 
 func genRouter(ctx context.Context, client *firestore.Client) *gin.Engine {
