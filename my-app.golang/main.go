@@ -33,6 +33,18 @@ func main() {
 
 	forProm := gin.Default()
 	prom := ginmetrics.GetMonitor()
+
+	gaugeMetric := &ginmetrics.Metric{
+		Type:        ginmetrics.Gauge,
+		Name:        "something_new",
+		Description: "This is the something new",
+		Labels:      []string{"label1"},
+	}
+	/* try adding custom metrics */
+	prom.AddMetric(gaugeMetric)
+	prom.GetMetric("something_new").Add([]string{"label1_value1"}, 0.1)
+	prom.GetMetric("something_new").Add([]string{"label1_value1"}, 0.082)
+
 	prom.SetMetricPath("/metrics")
 	prom.SetSlowTime(10)
 	prom.UseWithoutExposingEndpoint(g)
