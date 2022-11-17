@@ -42,15 +42,13 @@ def _author_get(username: str, request: Request, user_agent = Header(default=Non
 
     start_time = time.time()
 
-    docs = s.where("username", "==", username).limit(1)
-    result = docs.stream()
-    data = list(result)[-1]
-    response_data = data.to_dict()
+    docs = s.document(username)
+    response_data = docs.get()
 
     process_time = time.time() - start_time
 
     logger.info(json.dumps(dict(path=f"/api/author/{username}", method=request.method, user_agent=user_agent, host=host, process_time=process_time, remote_addr=request.client.host)))
-    return AuthorResponse(data=response_data)
+    return AuthorResponse(data=response_data.to_dict())
 
 @routers.post("/author/{username}")
 def _author_post(author: Author, username: str, request: Request, user_agent = Header(default=None), host = Header(default=None), s = Depends(get_coll)):
@@ -65,6 +63,7 @@ def _author_post(author: Author, username: str, request: Request, user_agent = H
     logger.info(json.dumps(dict(path=f"/api/author/{username}", method=request.method, user_agent=user_agent, host=host, process_time=process_time, remote_addr=request.client.host)))
     return AuthorResponse(data=author)
 
+
 @routers.put("/author/{username}")
 def _author_put(author: Author, username: str, request: Request, user_agent = Header(default=None), host = Header(default=None), s = Depends(get_coll)):
 
@@ -77,5 +76,3 @@ def _author_put(author: Author, username: str, request: Request, user_agent = He
 
     logger.info(json.dumps(dict(path=f"/api/author/{username}", method=request.method, user_agent=user_agent, host=host, process_time=process_time, remote_addr=request.client.host)))
     return AuthorResponse(data=author)
-
-
