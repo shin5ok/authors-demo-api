@@ -10,8 +10,6 @@ import sys
 
 from common import get_coll
 
-COLLECTION: str = "authors"
-
 app = FastAPI()
 db = firestore.Client()
 
