@@ -76,14 +76,13 @@ func genRouter(ctx context.Context, client *firestore.Client) *gin.Engine {
 		start := time.Now()
 		username := c.Param("u")
 		/* trick to get just one record */
-		query := client.Collection("authors").Where("username", "==", username).Limit(1)
-		itr := query.Documents(ctx)
-		defer itr.Stop()
-
-		snap, err := itr.Next()
-
+		// query := client.Collection("authors").Where("username", "==", username).Limit(1)
 		var responseData = gin.H{}
 		var httpStatus = http.StatusNotFound
+		snap, err := client.Collection("authors").Doc(username).Get(c)
+		if err != nil {
+			log.Info().Err(err)
+		}
 
 		if err == nil {
 			responseData = snap.Data()
