@@ -16,13 +16,19 @@ import (
 )
 
 var projectID = os.Getenv("PROJECT")
-var portNumber = os.Getenv("PORT")
+var servicePort = os.Getenv("PORT")
+var promPort = os.Getenv("PROM_PORT")
+var collectionName = os.Getenv("COLLECTION")
 
 func init() {
 	log.Logger = zerolog.New(os.Stderr).With().Timestamp().Logger()
 	zerolog.LevelFieldName = "severity"
 	zerolog.TimestampFieldName = "timestamp"
 	zerolog.TimeFieldFormat = time.RFC3339Nano
+
+	if collectionName == "" {
+		collectionName = "authors"
+	}
 }
 
 func main() {
@@ -55,11 +61,11 @@ func main() {
 		forProm.Run(":8000")
 	}()
 
-	if portNumber == "" {
-		portNumber = "8080"
+	if servicePort == "" {
+		servicePort = "8080"
 	}
 
-	portNumber = fmt.Sprintf(":%s", portNumber)
+	var portNumber = fmt.Sprintf(":%s", servicePort)
 
 	_ = g.Run(portNumber)
 }
@@ -75,11 +81,11 @@ func genRouter(ctx context.Context, client *firestore.Client) *gin.Engine {
 	g.GET("/api/author/:u", func(c *gin.Context) {
 		start := time.Now()
 		username := c.Param("u")
-		/* trick to get just one record */
-		// query := client.Collection("authors").Where("username", "==", username).Limit(1)
+
 		var responseData = gin.H{}
 		var httpStatus = http.StatusNotFound
-		snap, err := client.Collection("authors").Doc(username).Get(c)
+
+		snap, err := client.Collection(collectionName).Doc(username).Get(c)
 		if err != nil {
 			log.Info().Err(err)
 		}
