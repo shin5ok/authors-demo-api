@@ -58,7 +58,7 @@ func main() {
 	prom.Expose(forProm)
 
 	go func() {
-		forProm.Run(":8000")
+		forProm.Run(":10080")
 	}()
 
 	if servicePort == "" {
