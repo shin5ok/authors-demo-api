@@ -29,6 +29,15 @@ func init() {
 	if collectionName == "" {
 		collectionName = "authors"
 	}
+
+	if servicePort == "" {
+		servicePort = "8080"
+	}
+
+	if promPort == "" {
+		promPort = "10080"
+	}
+
 }
 
 func main() {
@@ -58,12 +67,8 @@ func main() {
 	prom.Expose(forProm)
 
 	go func() {
-		forProm.Run(":10080")
+		forProm.Run(":" + promPort)
 	}()
-
-	if servicePort == "" {
-		servicePort = "8080"
-	}
 
 	var portNumber = fmt.Sprintf(":%s", servicePort)
 
