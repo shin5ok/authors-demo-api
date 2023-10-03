@@ -3,7 +3,6 @@ import os
 import uvicorn
 
 from routers import root as router_root, author as router_author
-
 from common import get_coll
 from prometheus_fastapi_instrumentator import Instrumentator
 
