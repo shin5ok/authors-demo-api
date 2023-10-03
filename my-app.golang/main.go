@@ -80,6 +80,7 @@ func genRouter(ctx context.Context, client *firestore.Client) *gin.Engine {
 	g := gin.Default()
 
 	g.GET("/", func(c *gin.Context) {
+		log.Info().Msg("GET to /")
 		c.JSON(http.StatusOK, gin.H{"ping": "pong"})
 	})
 
@@ -92,7 +93,7 @@ func genRouter(ctx context.Context, client *firestore.Client) *gin.Engine {
 
 		snap, err := client.Collection(collectionName).Doc(username).Get(c)
 		if err != nil {
-			log.Info().Err(err)
+			log.Info().Err(err).Send()
 		}
 
 		if err == nil {
