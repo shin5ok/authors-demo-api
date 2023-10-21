@@ -10,7 +10,7 @@ import sys
 
 from common import get_coll
 
-app = FastAPI()
+
 db = firestore.Client()
 
 routers = APIRouter()
