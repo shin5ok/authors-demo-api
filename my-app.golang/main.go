@@ -15,10 +15,12 @@ import (
 	log "github.com/rs/zerolog/log"
 )
 
-var projectID = os.Getenv("PROJECT")
-var servicePort = os.Getenv("PORT")
-var promPort = os.Getenv("PROM_PORT")
-var collectionName = os.Getenv("COLLECTION")
+var (
+	projectID      = os.Getenv("PROJECT")
+	servicePort    = os.Getenv("PORT")
+	promPort       = os.Getenv("PROM_PORT")
+	collectionName = os.Getenv("COLLECTION")
+)
 
 func init() {
 	log.Logger = zerolog.New(os.Stderr).With().Timestamp().Logger()
@@ -72,7 +74,9 @@ func main() {
 
 	var portNumber = fmt.Sprintf(":%s", servicePort)
 
-	_ = g.Run(portNumber)
+	if err := g.Run(portNumber); err != nil {
+		panic(err)
+	}
 }
 
 func genRouter(ctx context.Context, client *firestore.Client) *gin.Engine {
