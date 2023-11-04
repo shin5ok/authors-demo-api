@@ -1,6 +1,6 @@
 module my-app
 
-go 1.18
+go 1.21.1
 
 require (
 	cloud.google.com/go/firestore v1.6.1
