@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"time"
@@ -11,8 +12,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/penglongli/gin-metrics/ginmetrics"
-	"github.com/rs/zerolog"
-	log "github.com/rs/zerolog/log"
 )
 
 var (
@@ -20,13 +19,31 @@ var (
 	servicePort    = os.Getenv("PORT")
 	promPort       = os.Getenv("PROM_PORT")
 	collectionName = os.Getenv("COLLECTION")
+	logger         *slog.Logger
 )
 
 func init() {
-	log.Logger = zerolog.New(os.Stderr).With().Timestamp().Logger()
-	zerolog.LevelFieldName = "severity"
-	zerolog.TimestampFieldName = "timestamp"
-	zerolog.TimeFieldFormat = time.RFC3339Nano
+
+	replace := func(groups []string, a slog.Attr) slog.Attr {
+		if a.Key == slog.LevelKey && a.Value.String() == slog.LevelWarn.String() {
+			return slog.String("severity", "WARNING")
+		}
+		if a.Key == "level" {
+			return slog.String("severity", a.Value.String())
+		}
+		if a.Key == "msg" {
+			return slog.String("message", a.Value.String())
+		}
+		return a
+	}
+
+	options := slog.HandlerOptions{
+		Level:     slog.LevelInfo,
+		AddSource: true, ReplaceAttr: replace,
+	}
+
+	logger = slog.New(slog.NewJSONHandler(os.Stdout, &options))
+	slog.SetDefault(logger)
 
 	if collectionName == "" {
 		collectionName = "authors"
@@ -43,6 +60,7 @@ func init() {
 }
 
 func main() {
+
 	ctx := context.Background()
 	client, _ := firestore.NewClient(ctx, projectID)
 
@@ -84,7 +102,7 @@ func genRouter(ctx context.Context, client *firestore.Client) *gin.Engine {
 	g := gin.Default()
 
 	g.GET("/", func(c *gin.Context) {
-		log.Info().Msg("GET to /")
+		logger.Info("GET to /")
 		c.JSON(http.StatusOK, gin.H{"ping": "pong"})
 	})
 
@@ -97,7 +115,7 @@ func genRouter(ctx context.Context, client *firestore.Client) *gin.Engine {
 
 		snap, err := client.Collection(collectionName).Doc(username).Get(c)
 		if err != nil {
-			log.Info().Err(err).Send()
+			logger.Error(err.Error())
 		}
 
 		if err == nil {
@@ -105,14 +123,15 @@ func genRouter(ctx context.Context, client *firestore.Client) *gin.Engine {
 			httpStatus = http.StatusOK
 			finish := time.Now()
 			difftime := finish.Sub(start)
-			log.Info().
-				Str("path", c.Request.URL.Path).
-				Str("host", c.Request.Host).
-				Str("method", c.Request.Method).
-				Str("remote_addr", c.Request.RemoteAddr).
-				Str("user_agent", c.Request.UserAgent()).
-				Int64("process_time", difftime.Milliseconds()).
-				Send()
+			logger.Info(
+				"/api/author/:u",
+				"path", c.Request.URL.Path,
+				"host", c.Request.Host,
+				"method", c.Request.Method,
+				"remote_addr", c.Request.RemoteAddr,
+				"user_agent", c.Request.UserAgent(),
+				"process_time", difftime.Milliseconds(),
+			)
 		}
 
 		c.JSON(httpStatus, responseData)
