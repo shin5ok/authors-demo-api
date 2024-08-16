@@ -10,8 +10,8 @@ def add_from_dict(data: dict) -> None:
     # Add a new doc in collection 'cities' with ID 'LA'
     db.collection('authors').document().set(data)
 
-def write_data_batch(data: list) -> None:
-    db = firestore.Client()
+def write_data_batch(database: str, data: list) -> None:
+    db = firestore.Client(database=database)
     batch = db.batch()
 
     for d in data:
@@ -22,7 +22,8 @@ def write_data_batch(data: list) -> None:
 
 @click.command()
 @click.option("--number", "-n", default=DEFAULT_NUMBER)
-def run(number: int) -> None:
+@click.option("--database", "-d", default="(default)")
+def run(number: int, database: str) -> None:
     fake = faker.Faker(['ja_JP'])
 
     data = []
@@ -35,7 +36,7 @@ def run(number: int) -> None:
         data.append(d)
         print(t+1, ":", d['name'], d['username'], d['job'], d['ssn'], d['address'])
 
-    write_data_batch(data)
+    write_data_batch(database, data)
     print()
     print(f"{number} records were writed to Firestore.")
 
